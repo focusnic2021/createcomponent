@@ -60,10 +60,14 @@ async def get_weather(message: types.Message):
             city = data['name']                 # название города (из ответа)
             country = data['sys']['country']    # страна
             lat, lon = data['coord']['lat'], data['coord']['lon']   # координаты города
-            dt = datetime.datetime.fromtimestamp(data['dt']).strftime('%d.%m.%Y %H:%M')
-            # время восхода и заката на сегодня в этом городе:
-            sunrise = datetime.datetime.fromtimestamp(data['sys']['sunrise']).strftime('%H:%M')
-            sunset  = datetime.datetime.fromtimestamp(data['sys']['sunset']).strftime('%H:%M')
+            # timezone = data['timezone']         # timezone - часовой пояс. Все вермена даны в Гринвиче
+            # время в городе - с поправкой на часовой пояс:
+            dt = datetime.datetime.fromtimestamp(data['dt']+data['timezone']).strftime('%d.%m.%Y %H:%M')
+            # время восхода и заката на сегодня в этом городе - с поправкой на часовой пояс:
+            sunrise = datetime.datetime.fromtimestamp(data['sys']['sunrise']+data['timezone']).strftime('%H:%M')
+            sunset  = datetime.datetime.fromtimestamp(data['sys']['sunset']+data['timezone']).strftime('%H:%M')
+            print(f"timezone={data['timezone']}")
+            print(f"sunrise={sunrise}, sunset={sunset}")
             length_of_day = datetime.datetime.fromtimestamp(data['sys']['sunset']) - datetime.datetime.fromtimestamp(data['sys']['sunrise'])
             # данные о погоде:
             temp     = data['main']['temp']             # температура
